@@ -247,3 +247,19 @@ public struct StartOfAuthorityRecord {
         self.minimum = minimum
     }
 }
+
+public struct NameServerRecord {
+    public var name: String
+    public var unique: Bool
+    public var internetClass: InternetClass
+    public var ttl: UInt32
+    public var server: String
+
+    public init(name: String, unique: Bool = false, internetClass: InternetClass = .internet, ttl: UInt32, server: String) {
+        self.name = name
+        self.unique = unique
+        self.internetClass = internetClass
+        self.ttl = ttl
+        self.server = server
+    }
+}

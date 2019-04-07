@@ -121,6 +121,7 @@ func deserializeRecord(_ data: Data, _ position: inout Data.Index) throws -> Res
     case .pointer: return try PointerRecord(deserialize: data, position: &position, common: common)
     case .alias: return try AliasRecord(deserialize: data, position: &position, common: common)
     case .startOfAuthority: return try StartOfAuthorityRecord(deserialize: data, position: &position, common: common)
+    case .nameServer: return try NameServerRecord(deserialize: data, position: &position, common: common)
     default: return try Record(deserialize: data, position: &position, common: common)
     }
 }
@@ -424,6 +425,25 @@ extension StartOfAuthorityRecord: ResourceRecord {
         buffer += expire.bytes
         buffer += minimum.bytes
         
+        // Set the length before the data field
+        let length = UInt16(buffer.endIndex - startPosition)
+        buffer.replaceSubrange((startPosition - 2)..<startPosition, with: length.bytes)
+    }
+}
+
+extension NameServerRecord: ResourceRecord {
+    init(deserialize data: Data, position: inout Data.Index, common: RecordCommonFields) throws {
+        (name, _, unique, internetClass, ttl) = common
+        position += 2
+        server = try deserializeName(data, &position)
+    }
+
+    public func serialize(onto buffer: inout Data, labels: inout Labels) throws {
+        try serializeRecordCommonFields((name, ResourceRecordType.alias, unique, internetClass, ttl), onto: &buffer, labels: &labels)
+        buffer += [0, 0]
+        let startPosition = buffer.endIndex
+        try serializeName(server, onto: &buffer, labels: &labels)
+
         // Set the length before the data field
         let length = UInt16(buffer.endIndex - startPosition)
         buffer.replaceSubrange((startPosition - 2)..<startPosition, with: length.bytes)
