@@ -263,3 +263,21 @@ public struct NameServerRecord {
         self.server = server
     }
 }
+
+public struct MailExchangeRecord {
+    public var name: String
+    public var unique: Bool
+    public var internetClass: InternetClass
+    public var ttl: UInt32
+    public var priority: UInt16
+    public var server: String
+
+    public init(name: String, unique: Bool = false, internetClass: InternetClass = .internet, ttl: UInt32, priority: UInt16, server: String) {
+        self.name = name
+        self.unique = unique
+        self.internetClass = internetClass
+        self.ttl = ttl
+        self.priority = priority
+        self.server = server
+    }
+}
